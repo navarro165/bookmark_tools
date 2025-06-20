@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bookmark Tools - New Test Suite</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+
+        .header p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .test-controls {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-left: 4px solid #007bff;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,123,255,0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        }
+
+        .btn-danger:hover {
+            box-shadow: 0 4px 12px rgba(220,53,69,0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #545b62 100%);
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 4px 12px rgba(108,117,125,0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+        }
+
+        .btn-success:hover {
+            box-shadow: 0 4px 12px rgba(40,167,69,0.3);
+        }
+
+        .test-stats {
+            background: #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .test-stats h4 {
+            margin-top: 0;
+            color: #495057;
+        }
+
+        .test-stats ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .test-stats li {
+            margin-bottom: 5px;
+        }
+
+        .test-stats details {
+            margin-top: 15px;
+        }
+
+        .test-stats summary {
+            cursor: pointer;
+            font-weight: 500;
+            color: #007bff;
+        }
+
+        #newTestSummary {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+            font-weight: 500;
+            display: none;
+        }
+
+        #newTestResults {
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+            overflow: hidden;
+        }
+
+        .test-section {
+            border-bottom: 1px solid #dee2e6;
+            padding: 20px;
+        }
+
+        .test-section:last-child {
+            border-bottom: none;
+        }
+
+        .test-section h3 {
+            margin: 0 0 15px 0;
+            color: #495057;
+            font-size: 1.3em;
+        }
+
+        .suite-progress {
+            color: #6c757d;
+            font-style: italic;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            border-left: 3px solid #007bff;
+        }
+
+        .test-result {
+            margin: 8px 0;
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 4px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .test-result.pass {
+            background: #d4edda;
+            border-left-color: #28a745;
+            color: #155724;
+        }
+
+        .test-result.fail {
+            background: #f8d7da;
+            border-left-color: #dc3545;
+            color: #721c24;
+        }
+
+        .test-result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .test-duration {
+            font-size: 0.9em;
+            opacity: 0.8;
+            font-family: 'Courier New', monospace;
+        }
+
+        .error-details {
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(220, 53, 69, 0.1);
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        .error-message {
+            font-family: 'Courier New', monospace;
+            margin-bottom: 10px;
+            white-space: pre-wrap;
+        }
+
+        .error-actions button {
+            font-size: 12px;
+            padding: 6px 12px;
+        }
+
+        #newTestOutput {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .info-box {
+            background: #cce5ff;
+            border: 1px solid #99ccff;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .info-box h4 {
+            margin: 0 0 10px 0;
+            color: #0066cc;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .feature-list li {
+            padding: 5px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feature-list li::before {
+            content: "✅";
+            font-size: 1.2em;
+        }
+
+        @media (max-width: 768px) {
+            .button-group {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .test-result-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 Bookmark Tools - New Test Suite</h1>
+            <p>Comprehensive testing for the current implementation</p>
+        </div>
+
+        <div class="content">
+            <div class="info-box">
+                <h4>🎯 About This Test Suite</h4>
+                <p>This test suite validates the current implementation of Bookmark Tools, including:</p>
+                <ul class="feature-list">
+                    <li>Keyword-based site classification (no hardcoded patterns)</li>
+                    <li>Advanced bookmark search with relevance scoring</li>
+                    <li>Intelligent content analysis with caching</li>
+                    <li>Exact URL duplicate detection with user choice</li>
+                    <li>Background script tab management</li>
+                </ul>
+            </div>
+
+            <div class="test-controls">
+                <h3>🎮 Test Controls</h3>
+                <div class="button-group">
+                    <button id="runAllNewTests" class="btn-success">
+                        🚀 Run All New Tests
+                    </button>
+                    <button id="runClassifierTests">
+                        🔍 Site Classifier Tests
+                    </button>
+                    <button id="runSearchTests">
+                        🔎 Bookmark Search Tests
+                    </button>
+                    <button id="runAnalyzerTests">
+                        📊 Content Analyzer Tests
+                    </button>
+                    <button id="runDetectorTests">
+                        🔄 Duplicate Detector Tests
+                    </button>
+                    <button id="runBackgroundTests">
+                        ⚙️ Background Script Tests
+                    </button>
+                </div>
+                <div class="button-group">
+                    <button id="stopTests" class="btn-danger">
+                        ⏹️ Stop Tests
+                    </button>
+                    <button id="clearNewResults" class="btn-secondary">
+                        🗑️ Clear Results
+                    </button>
+                </div>
+            </div>
+
+            <div id="testStats" class="test-stats">
+                <h4>📊 Loading test statistics...</h4>
+            </div>
+
+            <div id="newTestSummary"></div>
+
+            <div id="newTestResults"></div>
+
+            <div id="newTestOutput"></div>
+        </div>
+    </div>
+
+    <!-- Include the mock browser API -->
+    <script src="mock-browser-api.js"></script>
+    
+    <!-- Include all the source files being tested -->
+    <script src="../site-classifier.js"></script>
+    <script src="../bookmark-search.js"></script>
+    <script src="../content-analyzer.js"></script>
+    <script src="../duplicate-detector.js"></script>
+    <!-- Note: background.js is not included as it would try to register listeners -->
+    
+    <!-- Include all the new test suites -->
+    <script src="test-site-classifier-new.js"></script>
+    <script src="test-bookmark-search-new.js"></script>
+    <script src="test-content-analyzer-new.js"></script>
+    <script src="test-duplicate-detector-new.js"></script>
+    <script src="test-background-new.js"></script>
+    
+    <!-- Include the new test runner -->
+    <script src="test-runner-new.js"></script>
+</body>
+</html> 
